@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Vue.js Learning</title>
+    <script src="https://unpkg.com/vue@3.0.2"></script>
+</head>
+<body>
+    
+    <div id="todo-list">
+        <form v-on:submit.prevent="addNewTodo">
+          <label for="new-todo">Add a todo</label>
+          <input v-model="newTodoText" id="new-todo" placeholder="E.g. Git Commit"/>
+          <button>Add</button>
+        </form>
+        <ul>
+            <div class="todo-container" draggable="false">
+                <p>To Do</p>
+                <template v-for="(todo, index) in todos" class="todo">
+                    <div class="todo-wrapper" draggable="true">
+                        <todo-item :id="todo.id" :key="todo.id" :title="todo.title" :class="todo.class" @remove="todos.splice(index, 1)">
+                            
+                        </todo-item>
+                    </div>
+                </template>
+            </div>
+            <div class="todo-container" draggable="false">
+                <p>Doing</p>
+                <template v-for="(todo, index) in doings" class="doing">
+                    <div class="todo-wrapper" draggable="true"> 
+                        <todo-item :id="todo.id" :key="todo.id" :title="todo.title" :class="todo.class" @remove="doings.splice(index, 1)">
+                            
+                        </todo-item>
+                    </div>
+                </template>
+            </div>
+            <div class="todo-container" draggable="false">
+                <p>Done</p>
+                <template v-for="(todo, index) in dones" class="done">
+                    <div class="todo-wrapper" draggable="true">
+                        <todo-item :id="todo.id" :key="todo.id" :title="todo.title" :class="todo.class" @remove="dones.splice(index, 1)">
+                            
+                        </todo-item>
+                    </div>
+                </template>
+            </div>
+        </ul>
+      </div>
+
+</body>
+
+<script src="./app.js"></script>
+
+<script type="module">
+
+    import interact from 
+    'https://cdn.interactjs.io/v1.10.11/interactjs/index.js'
+
+    // target elements with the "todo-wrapper" class
+    interact('.todo-wrapper')
+    .draggable({
+        // enable inertial throwing
+        inertia: true,
+        // enable autoScroll
+        autoScroll: true,
+
+        listeners: {
+        // call this function on every dragmove event
+        move: dragMoveListener,
+        }
+    })
+
+    function dragMoveListener (event) {
+    var target = event.target
+    // keep the dragged position in the data-x/data-y attributes
+    var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
+    var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
+
+    // translate the element
+    target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
+
+    // update the posiion attributes
+    target.setAttribute('data-x', x)
+    target.setAttribute('data-y', y)
+    }
+
+    // this function is used later in the resizing and gesture demos
+    window.dragMoveListener = dragMoveListener
+
+</script>
+
+<!-- <script type="module">
+
+    let cards = document.querySelectorAll('.todo-wrapper');
+    let lists = document.querySelectorAll('.todo-container');
+    
+    // var mutationObserver = new MutationObserver(function(mutations) {
+    //     mutations.forEach(function(mutation) {
+    //         cards.forEach((card)=>{
+    //             registerEventsOnCard(card);
+    //         });
+    //     });
+    // });
+
+    // // Starts listening for changes in the root HTML element of the page.
+    // mutationObserver.observe(document.documentElement, {
+    //     attributes: true,
+    //     characterData: true,
+    //     childList: true,
+    //     subtree: true,
+    //     attributeOldValue: true,
+    //     characterDataOldValue: true
+    // });
+
+    cards.forEach((card)=>{
+        registerEventsOnCard(card);
+    });
+
+    lists.forEach((list)=>{
+        list.addEventListener('dragover', (e)=>{
+            e.preventDefault();
+            let draggingCard = document.querySelector('.dragging');
+            let cardAfterDraggingCard = getCardAfterDraggingCard(list, e.clientY);
+            if(cardAfterDraggingCard){
+                cardAfterDraggingCard.parentNode.insertBefore(draggingCard, cardAfterDraggingCard);
+            } else{
+                list.appendChild(draggingCard);
+            }
+            
+        });
+    });
+
+    function getCardAfterDraggingCard(list, yDraggingCard){
+
+        let listCards = [...list.querySelectorAll('.card:not(.dragging)')];
+
+        return listCards.reduce((closestCard, nextCard)=>{
+            let nextCardRect = nextCard.getBoundingClientRect();
+            let offset = yDraggingCard - nextCardRect.top - nextCardRect.height /2;
+
+            if(offset < 0 && offset > closestCard.offset){
+                return {offset, element: nextCard}
+            } else{
+                return closestCard;
+            }
+        
+        }, {offset: Number.NEGATIVE_INFINITY}).element;
+
+    }
+
+    function registerEventsOnCard(card){
+        card.addEventListener('dragstart', (e)=>{
+            card.classList.add('dragging');
+        });
+
+        card.addEventListener('dragend', (e)=>{
+            card.classList.remove('dragging');
+        });
+    }
+
+</script> -->
+
+</html>
